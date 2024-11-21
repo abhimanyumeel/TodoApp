@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { RiDeleteBin5Fill } from "react-icons/ri";
 
 const TodoList = () => {
   const [activities, setActivities] = useState([]);
@@ -36,12 +37,6 @@ const TodoList = () => {
             className="flex items-center justify-between bg-gray-700 p-2 rounded-md"
           >
             <div className="flex items-center">
-              <input
-                type="checkbox"
-                className="mr-2"
-                checked={activity.completed}
-                onChange={() => toggleCompletion(index)}
-              />
               <span
                 className={`${
                   activity.completed ? "line-through text-gray-400" : ""
@@ -49,28 +44,35 @@ const TodoList = () => {
               >
                 {activity.text}
               </span>
+
+              <input
+                type="checkbox"
+                className="mr-2 ml-4"
+                checked={activity.completed}
+                onChange={() => toggleCompletion(index)}
+              />
             </div>
             <button
-              className="text-red-500 text-sm hover:underline"
+              className="opacity-0 hover:opacity-100 text-red-500 text-sm hover:underline"
               onClick={() => deleteActivity(index)}
             >
-              Delete
+              <RiDeleteBin5Fill />
             </button>
           </div>
         ))}
       </div>
 
       {/* Add Activity Section */}
-      <div className="mt-4 flex items-center">
+      <div className="mt-2 flex items-center">
         <input
           type="text"
-          className="bg-gray-700 text-white rounded-l-md p-2 w-full focus:outline-none"
-          placeholder="Add a new activity"
+          className="bg-transparent text-white rounded-l-md p-2 w-full focus:outline-none"
+          placeholder="new activity.."
           value={newActivity}
           onChange={(e) => setNewActivity(e.target.value)}
         />
         <button
-          className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-r-md"
+          className="bg-blue-500 hover:bg-blue-600 text-white text-sm p-2 rounded-r-md"
           onClick={addActivity}
         >
           Add
