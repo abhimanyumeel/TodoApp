@@ -10,10 +10,8 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       title: {
-        type: Sequelize.STRING
-      },
-      userId: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING,
+        allowNull: false //Ensuring title is required
       },
       createdAt: {
         allowNull: false,

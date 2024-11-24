@@ -3,8 +3,8 @@ const { createCard, getCards, deleteCard } = require('../controllers/cardControl
 const { authenticate } = require('../middlewares/authMiddleware');
 const router = express.Router();
 
-router.post('/', authenticate, createCard);
-router.get('/', authenticate, getCards);
-router.delete('/:id', authenticate, deleteCard);
+router.post('/', createCard);
+router.get('/', getCards);
+router.delete('/:id', deleteCard);
 
 module.exports = router;

@@ -3,6 +3,10 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const { authMiddleware, errorMiddleware } = require("./middlewares");
 require("dotenv").config(); 
+const {sequelize} = require("./models");
+
+const cardRoutes = require("./routes/card");
+const activityRoutes = require("./routes/activity");
 
 
 const app = express();
@@ -10,6 +14,9 @@ const app = express();
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(cors());
+
+app.use("/api/cards", cardRoutes);
+app.use("/api/activities", activityRoutes);
 
 
 app.use(errorMiddleware);
@@ -21,4 +28,15 @@ app.get("/", (req, res) => {
 
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+sequelize
+ .authenticate()
+ .then(() => {
+    console.log("Database connected...");
+    return sequelize.sync({ force: false});
+ })
+ .then(() => {
+   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+})
+.catch((error) => {
+    console.error("Unable to connect to the database:", error);
+})
