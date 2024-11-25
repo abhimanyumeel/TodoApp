@@ -36,6 +36,34 @@ const getCards = async (req, res) => {
   }
 };
 
+const updateCard = async (req, res) => {
+  const { id } = req.params;
+  const { title } = req.body;
+
+  // Validate input
+  if (!title || title.trim() === '') {
+    return res.status(400).json({ error: 'Title is required' });
+  }
+
+  try {
+    const card = await Card.findOne({ where: { id } });
+
+    if (!card) {
+      return res.status(404).json({ error: 'Card not found' });
+    }
+
+    // Update the card's title
+    card.title = title;
+    await card.save();
+
+    res.status(200).json({ message: 'Card updated successfully', card });
+  } catch (error) {
+    console.error('Error updating card:', error);
+    res.status(500).json({ error: 'Error updating card' });
+  }
+};
+
+
 const deleteCard = async (req, res) => {
   try {
 
@@ -47,7 +75,7 @@ const deleteCard = async (req, res) => {
     
     // Delete the card
     await Card.destroy({ where: { id: req.params.id } });
-    res.status(200).json({ message: 'Card deleted  successfully' });
+    res.status(200).json({ message: 'Card deleted  successfully', cardId: req.params.id });
   } catch (error) {
     console.error('Error deleting card:', error);
     res.status(500).json({ error: 'Error deleting card' });
@@ -57,5 +85,6 @@ const deleteCard = async (req, res) => {
 module.exports = {
     createCard,
     getCards,
+    updateCard,
     deleteCard,
 };

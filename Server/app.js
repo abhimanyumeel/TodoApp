@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const path = require("path");
 const { authMiddleware, errorMiddleware } = require("./middlewares");
 require("dotenv").config(); 
 const {sequelize} = require("./models");
@@ -17,6 +18,15 @@ app.use(cors());
 
 app.use("/api/cards", cardRoutes);
 app.use("/api/activities", activityRoutes);
+
+// Serve React frontend (build folder from the client)
+const CLIENT_BUILD_PATH = path.join(__dirname, "../Client/build");
+app.use(express.static(CLIENT_BUILD_PATH));
+
+// Catch-all route to serve the React frontend for unknown routes
+app.get("*", (req, res) => {
+  res.sendFile(path.join(CLIENT_BUILD_PATH, "index.html"));
+});
 
 
 app.use(errorMiddleware);

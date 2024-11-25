@@ -1,39 +1,51 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { RiDeleteBin5Fill } from "react-icons/ri";
+import useActivities from "../useActivities"; // Adjust the import path if necessary
 
-const TodoList = () => {
-  const [activities, setActivities] = useState([]);
-  const [newActivity, setNewActivity] = useState("");
+const TodoList = ({ cardId }) => {
+  const [newActivity, setNewActivity] = useState("");  // State for the new activity
+  const { activities, isLoading, error, addActivity, toggleCompletion, deleteActivity } = useActivities(cardId);
 
-  // Add a new activity
-  const addActivity = () => {
+
+  console.log("Card ID is passed to useActivities:", cardId);
+  // Handle adding a new activity
+  const handleAddActivity = () => {
     if (newActivity.trim() !== "") {
-      setActivities([...activities, { text: newActivity, completed: false }]);
-      setNewActivity("");
+      addActivity({ text: newActivity, cardId });  // Call the addActivity mutation
+      setNewActivity("");  // Clear input field
     }
   };
 
-  // Toggle activity completion
-  const toggleCompletion = (index) => {
-    const updatedActivities = activities.map((activity, idx) =>
-      idx === index ? { ...activity, completed: !activity.completed } : activity
-    );
-    setActivities(updatedActivities);
+  // Handle activity completion toggle
+  const handleToggleCompletion = (activityId) => {
+    toggleCompletion(activityId);  // Call the toggleCompletion mutation
   };
 
-  // Delete an activity
-  const deleteActivity = (index) => {
-    const updatedActivities = activities.filter((_, idx) => idx !== index);
-    setActivities(updatedActivities);
+  // Handle activity deletion
+  const handleDeleteActivity = (activityId) => {
+    deleteActivity({ activityId, cardId });  // Call the deleteActivity mutation
   };
+
+  // Show loading or error message if needed
+  if (isLoading) {
+    return <div>Loading activities...</div>;
+  }
+
+  if(error?.response?.status === 404) {
+    return <div>No activities found for this card</div>
+  }
+
+  if (error) {
+    return <div>Error loading activities: {error.message}</div>;
+  }
 
   return (
     <div>
       {/* Activities List */}
       <div className="space-y-2">
-        {activities.map((activity, index) => (
+        {activities?.map((activity) => (
           <div
-            key={index}
+            key={activity.id}
             className="flex items-center justify-between bg-gray-700 p-2 rounded-md"
           >
             <div className="flex items-center">
@@ -49,12 +61,12 @@ const TodoList = () => {
                 type="checkbox"
                 className="mr-2 ml-4"
                 checked={activity.completed}
-                onChange={() => toggleCompletion(index)}
+                onChange={() => handleToggleCompletion(activity.id)}  // Toggle activity completion
               />
             </div>
             <button
               className="opacity-0 hover:opacity-100 text-red-500 text-sm hover:underline"
-              onClick={() => deleteActivity(index)}
+              onClick={() => handleDeleteActivity(activity.id)}  // Delete activity
             >
               <RiDeleteBin5Fill />
             </button>
@@ -69,11 +81,11 @@ const TodoList = () => {
           className="bg-transparent text-white rounded-l-md p-2 w-full focus:outline-none"
           placeholder="new activity.."
           value={newActivity}
-          onChange={(e) => setNewActivity(e.target.value)}
+          onChange={(e) => setNewActivity(e.target.value)}  // Update activity input state
         />
         <button
           className="bg-blue-500 hover:bg-blue-600 text-white text-sm p-2 rounded-r-md"
-          onClick={addActivity}
+          onClick={handleAddActivity}  // Add new activity
         >
           Add
         </button>
